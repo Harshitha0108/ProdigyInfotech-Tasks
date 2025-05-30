@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch Web Application</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .stopwatch {
+            font-size: 4em;
+            margin: 20px 0;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        button {
+            padding: 12px 25px;
+            margin: 8px;
+            font-size: 1.1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        
+        button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .lap-times {
+            margin-top: 30px;
+            list-style: none;
+            padding: 0;
+            max-width: 300px;
+            width: 100%;
+        }
+        
+        .lap-times li {
+            background: rgba(255, 255, 255, 0.1);
+            margin: 8px 0;
+            padding: 10px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <h1>Stopwatch</h1>
+    <div class="stopwatch" id="display">00:00:00</div>
+    <button onclick="startStopwatch()">Start</button>
+    <button onclick="pauseStopwatch()">Pause</button>
+    <button onclick="resetStopwatch()">Reset</button>
+    <button onclick="lapTime()">Lap</button>
+    
+    <ul class="lap-times" id="laps"></ul>
+
+    <script>
+        let timer = null;
+        let isRunning = false;
+        let startTime = 0;
+        let elapsedTime = 0;
+
+        function startStopwatch() {
+            if (!isRunning) {
+                isRunning = true;
+                startTime = Date.now() - elapsedTime;
+                timer = setInterval(updateDisplay, 1000);
+            }
+        }
+
+        function pauseStopwatch() {
+            if (isRunning) {
+                isRunning = false;
+                clearInterval(timer);
+                elapsedTime = Date.now() - startTime;
+            }
+        }
+
+        function resetStopwatch() {
+            isRunning = false;
+            clearInterval(timer);
+            elapsedTime = 0;
+            startTime = 0;
+            document.getElementById("display").textContent = "00:00:00";
+            document.getElementById("laps").innerHTML = "";
+        }
+
+        function updateDisplay() {
+            elapsedTime = Date.now() - startTime;
+            let totalSeconds = Math.floor(elapsedTime / 1000);
+            let hours = Math.floor(totalSeconds / 3600);
+            let minutes = Math.floor((totalSeconds % 3600) / 60);
+            let seconds = totalSeconds % 60;
+
+            document.getElementById("display").textContent =
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function lapTime() {
+            if (isRunning) {
+                const lapItem = document.createElement("li");
+                lapItem.textContent = document.getElementById("display").textContent;
+                document.getElementById("laps").appendChild(lapItem);
+            }
+        }
+    </script>
+</body>
+</html>
